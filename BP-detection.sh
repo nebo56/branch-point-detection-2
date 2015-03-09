@@ -5,6 +5,7 @@
 #$ -j y
 #$ -S /bin/bash
 
+
 PYTHONPATH=/home/skgthab/programs/Python-2.7.5/bin
 PERL5LIB=/home/skgthab/programs/ActivePerl-5.16.3.1603-x86_64-linux-glibc-2.3.5-296746/perl/bin
 export PATH=$PYTHONPATH:$PATH
@@ -15,9 +16,12 @@ export PATH=/home/skgthab/programs/samtools-0.1.19:$PATH
 export PATH=/home/skgthab/programs/fastx_toolkit0.0.13:$PATH
 export PATH=/home/skgthab/programs/bedtools-2.17.0/bin:$PATH
 
-data=iCLIP_Sm_Brain_P7_stringent_A_Mm_NNNGGTTNN_20110427_LUmb40_1
-path=/cluster/project9/ule-group/BranchPoints/branch-point-detection-master/
+data=$1
+path=/cluster/project9/ule-group/BranchPoints/branch-point-detection-2/
 introns=mm9-introns.bed
+
+# unzip
+gunzip ${path}${data}.fq.gz
 
 # clip the adapter and discard non-clipped sequences and discard the sequences that are shorter then 15 nt + 5 random barcode + 4 experimental barcode
 fastx_clipper -Q 33 -a AGATCGGAAG -c -n -l 24 -i  ${path}${data}.fq -o  ${path}${data}-clipped.fq
