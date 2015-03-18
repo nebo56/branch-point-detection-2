@@ -23,7 +23,7 @@ def BEDsum(fname_in, fname_out):
         chr = col[0]
         start = col[1]
         end = col[2]
-        cDNA = col[3]
+        cDNA = 1	# each read count as one
         strand = col[5]
         if lastChr == None or (lastChr == chr and lastStart == start and lastEnd == end and lastStrand == strand):
             cDNAsum += int(cDNA)
