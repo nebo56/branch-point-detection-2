@@ -89,13 +89,13 @@ bedtools intersect -s -f 1.00 -a ${path}${data}-trimmed-uniq.bed -b ${path}${int
 #rm ${path}${introns}-anti.bed
 
 # flank intron border on the same and anti strand
-python ${path}flankBEDpositions.py ${introns} ${path}introns-flanked_2_0.bed 2 0
+python ${path}flankBEDpositions.py ${introns} ${path}introns-flanked_0_-2.bed 0 -2
 
 #python ${path}flankBEDpositions.py ${path}${introns} ${path}${introns}-flanked-same.bed 0 -2
 #python ${path}flankBEDpositions.py ${path}${introns} ${path}${introns}-flanked-anti.bed 2 0
 
 # remove all reads that are 100% in flanked introns which means they are not next to the exon position
-bedtools intersect -s -v -f 1.00 -a ${path}${data}-trimmed-uniq-introns.bed -b ${path}${introns}-flanked_2_0.bed | uniq > ${path}${data}-trimmed-uniq-introns-selected.bed
+bedtools intersect -s -v -f 1.00 -a ${path}${data}-trimmed-uniq-introns.bed -b ${path}${introns}-flanked_0_-2.bed | uniq > ${path}${data}-trimmed-uniq-introns-selected.bed
 rm ${path}introns-flanked_2_0.bed
 
 #bedtools intersect -v -f 1.00 -a ${path}${data}-same-introns.bed -b ${path}${introns}-flanked-same.bed | uniq > ${path}${data}-selected_reads-same.bed
