@@ -73,7 +73,10 @@ bedtools intersect -s -v -f 1.00 -a ${path}${data}-trimmed-uniq-introns.bed -b $
 rm ${introns}-flanked_0_-2.bed
 
 # set end positions of the read
-python ${path}set_branch_point_position.py ${path}${data}-trimmed-uniq-introns-selected.bed ${path}${data}-branch_points.bed
+python ${path}set_branch_point_position.py ${path}${data}-trimmed-uniq-introns-selected.bed ${path}${data}-trimmed-uniq-introns-selected-bp.bed
 #rm ${path}${data}-selected_reads.bed
 
+# sum together reads that ends on the same position
+cat ${path}${data}-trimmed-uniq-introns-selected-bp.bed | awk '{print $1 "\t" $2 "\t" $3 "\t\t\t" $6}' | sort -k1,1 -k2,2n -k6,6 > ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.bed
+python ${path}BEDsum.py ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.bed ${path}${data}-branch_points.bed
 
