@@ -3,7 +3,7 @@ Created on Aug 20, 2013
 
 @author: Nejc
 
-The script will flank the region in both directions
+The script will flank the region in both directions in a new bed file.
 '''
 
 import sys
@@ -14,17 +14,19 @@ def flank_positions(fin_fname, fout_fname, left_shift, right_shift):
     line = fin.readline()
     while line:
         col = line.rstrip('\n').rsplit('\t')
-        chr = col[0]
-        pos1 = col[1]
-        pos2 = col[2]
-        pos1 = int(pos1) + int(left_shift)
-        pos2 = int(pos2) + int(right_shift)
-        if pos2 <= pos1:
-		print "error: the intron is too short for flanking "
-		print line
-		pos1 = col[1]
-		pos2 = col[2]
-	fout.write(chr + '\t' + str(pos1) + '\t' + str(pos2) + '\n')
+        if line.__len__() > 6:
+            chr = col[0]
+            start = col[1]
+            end = col[2]
+            strand = col[5]
+            if strand == '+':
+                shift_start = int(start) - int(left_shift)
+                shift_end = int(end) + int(right_shift)
+            else:
+                shift_end = int(end) + int(left_shift)
+                shift_start = int(start) - int(right_shift)
+            if shift_start >= 0 and shift_start < shift_end:
+                fout.write(chr + '\t' + str(shift_start) + '\t' + str(shift_end) + '\t' + col[3] + '\t' + col[0] + ':' + col[1] + ':' + col[2] + '\t' + col[5] + '\n')
         line = fin.readline()
 
 if sys.argv.__len__() == 5:

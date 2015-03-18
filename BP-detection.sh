@@ -79,7 +79,7 @@ sort -k1,1 -k2,2n -k6,6 ${path}${data}-trimmed.bed | uniq > ${path}${data}-trimm
 #rm ${path}${data}.bed
 
 # report reads which overlaps 100% with introns (intron .bed is from UCSC bed introns only)
-bedtools intersect -f 1.00 -a ${path}${data}-trimmed-uniq.bed -b ${path}${introns} | uniq > ${path}${data}-trimmed-uniq-introns.bed
+bedtools intersect -s -f 1.00 -a ${path}${data}-trimmed-uniq.bed -b ${path}${introns} | uniq > ${path}${data}-trimmed-uniq-introns.bed
 
 #bedtools intersect -f 1.00 -a ${path}${data}-same.bed -b ${path}${introns}-same.bed | uniq > ${path}${data}-same-introns.bed
 #bedtools intersect -f 1.00 -a ${path}${data}-anti.bed -b ${path}${introns}-anti.bed | uniq > ${path}${data}-anti-introns.bed
@@ -95,7 +95,7 @@ python ${path}flankBEDpositions.py ${introns} ${path}introns-flanked_2_0.bed 2 0
 #python ${path}flankBEDpositions.py ${path}${introns} ${path}${introns}-flanked-anti.bed 2 0
 
 # remove all reads that are 100% in flanked introns which means they are not next to the exon position
-bedtools intersect -v -f 1.00 -a ${path}${data}-trimmed-uniq-introns.bed -b ${path}${introns}-flanked_2_0.bed | uniq > ${path}${data}-trimmed-uniq-introns-selected.bed
+bedtools intersect -s -v -f 1.00 -a ${path}${data}-trimmed-uniq-introns.bed -b ${path}${introns}-flanked_2_0.bed | uniq > ${path}${data}-trimmed-uniq-introns-selected.bed
 rm ${path}introns-flanked_2_0.bed
 
 #bedtools intersect -v -f 1.00 -a ${path}${data}-same-introns.bed -b ${path}${introns}-flanked-same.bed | uniq > ${path}${data}-selected_reads-same.bed
