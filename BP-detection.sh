@@ -63,14 +63,14 @@ bedtools bamtobed -i ${path}${data}-trimmed.bam > ${path}${data}-trimmed.bed
 sort -k1,1 -k2,2n -k6,6 ${path}${data}-trimmed.bed | uniq > ${path}${data}-trimmed-uniq.bed
 
 # report reads which overlaps 100% with introns (intron .bed is from UCSC bed introns only)
-bedtools intersect -s -f 1.00 -a ${path}${data}-trimmed-uniq.bed -b ${path}${introns} | uniq > ${path}${data}-trimmed-uniq-introns.bed
+bedtools intersect -s -f 1.00 -a ${path}${data}-trimmed-uniq.bed -b ${introns} | uniq > ${path}${data}-trimmed-uniq-introns.bed
 
 # flank intron border on the same and anti strand
-python ${path}flankBEDpositions.py ${introns} ${path}introns-flanked_0_-2.bed 0 -2
+python ${path}flankBEDpositions.py ${introns} ${introns}-flanked_0_-2.bed 0 -2
 
 # remove all reads that are 100% in flanked introns which means they are not next to the exon position
-bedtools intersect -s -v -f 1.00 -a ${path}${data}-trimmed-uniq-introns.bed -b ${path}${introns}-flanked_0_-2.bed | uniq > ${path}${data}-trimmed-uniq-introns-selected.bed
-rm ${path}introns-flanked_0_-2.bed
+bedtools intersect -s -v -f 1.00 -a ${path}${data}-trimmed-uniq-introns.bed -b ${introns}-flanked_0_-2.bed | uniq > ${path}${data}-trimmed-uniq-introns-selected.bed
+rm ${introns}-flanked_0_-2.bed
 
 # set end positions of the read
 python ${path}set_branch_point_position.py ${path}${data}-trimmed-uniq-introns-selected.bed ${path}${data}-branch_points.bed
