@@ -62,64 +62,18 @@ samtools view -hSb ${path}${data}-trimmed.sam > ${path}${data}-trimmed.bam
 bedtools bamtobed -i ${path}${data}-trimmed.bam > ${path}${data}-trimmed.bed
 sort -k1,1 -k2,2n -k6,6 ${path}${data}-trimmed.bed | uniq > ${path}${data}-trimmed-uniq.bed
 
-# SAM to BED with collapsed read count by random barcodes
-#python ${path}SAMtoCollapsedSAMandBED.py ${path}${data}-trimmed.sam ${path}${data}-Barcodes.fa ${path}${data}-collapsed.sam ${path}${data}.bed
-#python ${path}SAMtoCollapsedSAMandBED.py ${path}${data}.sam ${path}${data}-Barcodes.fa ${path}${data}-collapsed.sam ${path}${data}.bed
-#rm ${path}${data}-trimmed.sam
-#rm ${path}${data}-collapsed.sam
-#rm ${path}${data}-Barcodes.fa
-
-
-
-# we need to split bed by strand because bedtools intersect -s is not working properly
-#awk '{if($6=="+") print}' ${path}${introns} > ${path}${introns}-same.bed
-#awk '{if($6=="-") print}' ${path}${introns} > ${path}${introns}-anti.bed
-#awk '{if($5=="+") print}' ${path}${data}.bed > ${path}${data}-same.bed
-#awk '{if($5=="-") print}' ${path}${data}.bed > ${path}${data}-anti.bed
-#rm ${path}${data}.bed
-
 # report reads which overlaps 100% with introns (intron .bed is from UCSC bed introns only)
 bedtools intersect -s -f 1.00 -a ${path}${data}-trimmed-uniq.bed -b ${path}${introns} | uniq > ${path}${data}-trimmed-uniq-introns.bed
-
-#bedtools intersect -f 1.00 -a ${path}${data}-same.bed -b ${path}${introns}-same.bed | uniq > ${path}${data}-same-introns.bed
-#bedtools intersect -f 1.00 -a ${path}${data}-anti.bed -b ${path}${introns}-anti.bed | uniq > ${path}${data}-anti-introns.bed
-#rm ${path}${data}-same.bed
-#rm ${path}${data}-anti.bed
-#rm ${path}${introns}-same.bed
-#rm ${path}${introns}-anti.bed
 
 # flank intron border on the same and anti strand
 python ${path}flankBEDpositions.py ${introns} ${path}introns-flanked_0_-2.bed 0 -2
 
-#python ${path}flankBEDpositions.py ${path}${introns} ${path}${introns}-flanked-same.bed 0 -2
-#python ${path}flankBEDpositions.py ${path}${introns} ${path}${introns}-flanked-anti.bed 2 0
-
 # remove all reads that are 100% in flanked introns which means they are not next to the exon position
 bedtools intersect -s -v -f 1.00 -a ${path}${data}-trimmed-uniq-introns.bed -b ${path}${introns}-flanked_0_-2.bed | uniq > ${path}${data}-trimmed-uniq-introns-selected.bed
-rm ${path}introns-flanked_2_0.bed
-
-#bedtools intersect -v -f 1.00 -a ${path}${data}-same-introns.bed -b ${path}${introns}-flanked-same.bed | uniq > ${path}${data}-selected_reads-same.bed
-#bedtools intersect -v -f 1.00 -a ${path}${data}-anti-introns.bed -b ${path}${introns}-flanked-anti.bed | uniq > ${path}${data}-selected_reads-anti.bed
-#rm ${path}${data}-same-introns.bed
-#rm ${path}${data}-anti-introns.bed
-#rm ${path}${introns}-flanked-same.bed
-#rm ${path}${introns}-flanked-anti.bed
-
-#merge both strands together
-#cat ${path}${data}-selected_reads-same.bed ${path}${data}-selected_reads-anti.bed > ${path}${data}-selected_reads.bed
-#rm ${path}${data}-selected_reads-same.bed
-#rm ${path}${data}-selected_reads-anti.bed
+rm ${path}introns-flanked_0_-2.bed
 
 # set end positions of the read
 python ${path}set_branch_point_position.py ${path}${data}-trimmed-uniq-introns-selected.bed ${path}${data}-branch_points.bed
 #rm ${path}${data}-selected_reads.bed
-
-# SAM to BAM and BAI
-#samtools view -Sb ${path}${data}-collapsed.sam > ${path}${data}-collapsed.bam
-#rm ${path}${data}-collapsed.sam
-#samtools sort ${path}${data}-collapsed.bam ${path}${data}-collapsed-sorted
-#rm ${path}${data}-collapsed.bam
-#samtools index ${path}${data}-collapsed-sorted.bam ${path}${data}-collapsed-sorted.bam.bai
-
 
 
