@@ -18,9 +18,9 @@ def set_branch_point_position (fname_in, fname_out):
     while line:
         col = line.rstrip('\n').rsplit('\t')
         if col[5] == '+':
-            branch_point = int(col[1]) -2
+            branch_point = int(col[1]) + 1
         else:
-            branch_point = int(col[2])
+            branch_point = int(col[2]) - 1
         fout.write(col[0] + '\t' + str(branch_point) + '\t' + str(branch_point + 1) + '\t' + col[3] + '\t' + col[4] + '\t' + col[5] + '\n')
         line = fin.readline()
     fout.close()
