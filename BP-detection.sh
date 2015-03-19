@@ -17,7 +17,7 @@ export PATH=/home/skgthab/programs/fastx_toolkit0.0.13:$PATH
 export PATH=/home/skgthab/programs/bedtools-2.17.0/bin:$PATH
 
 data=$1
-path=/cluster/project9/ule-group/BranchPoints/branch-point-detection-2/
+path=/cluster/project9/ule-group/BranchPoints/branch-point-detection-2-test/
 introns=/home/skgthab/annotations/regions/mm9-introns.bed
 
 # unzip
@@ -40,13 +40,14 @@ rm ${path}${data}-noBarcodes.fa
 
 # filter reads woth more then 2 mismatches
 samtools view -Sh ${path}${data}.sam | grep -e "^@" -e "XM:i:[012][^0-9]" > ${path}${data}-2mis.sam
+rm ${path}${data}.sam
 
 # count of genomic transitions from all reads
 python ${path}transition_ratio.py ${path}${data}-2mis.sam ${path}${data}-genomic_transitions-all.log
 
 # keep only reads that ends with AG
 python ${path}get_branch_point_candidates.py ${path}${data}-2mis.sam ${path}${data}-filtered.sam
-#rm ${path}${data}.sam
+rm ${path}${data}-2mis.sam
 
 # count of genomic transitions from selected reads that ends with AG
 python ${path}transition_ratio.py ${path}${data}-filtered.sam ${path}${data}-genomic_transitions-filteredAG.log
@@ -83,5 +84,6 @@ rm ${path}${data}-trimmed-uniq-introns-selected.bed
 # sum together reads that ends on the same position
 cat ${path}${data}-trimmed-uniq-introns-selected-bp.bed | awk '{print $1 "\t" $2 "\t" $3 "\t\t\t" $6}' | sort -k1,1 -k2,2n -k6,6 > ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.bed
 python ${path}BEDsum.py ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.bed ${path}${data}-branch_points.bed
+rm ${path}${data}-trimmed-uniq-introns-selected-bp.bed
 rm ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.bed
 
