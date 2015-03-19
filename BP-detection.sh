@@ -57,26 +57,31 @@ rm ${path}${data}-filtered.sam
 
 # SAM to BAM
 samtools view -hSb ${path}${data}-trimmed.sam > ${path}${data}-trimmed.bam
+rm ${path}${data}-trimmed.sam
 
 # remove duplicates (reads with the same random barcodes)
 bedtools bamtobed -i ${path}${data}-trimmed.bam > ${path}${data}-trimmed.bed
 sort -k1,1 -k2,2n -k6,6 ${path}${data}-trimmed.bed | uniq > ${path}${data}-trimmed-uniq.bed
+rm ${path}${data}-trimmed.bed
 
 # report reads which overlaps 100% with introns (intron .bed is from UCSC bed introns only)
 bedtools intersect -s -f 1.00 -a ${path}${data}-trimmed-uniq.bed -b ${introns} | uniq > ${path}${data}-trimmed-uniq-introns.bed
+rm ${path}${data}-trimmed-uniq.bed
 
 # flank intron border on the same and anti strand
 python ${path}flankBEDpositions.py ${introns} ${introns}-flanked_0_-2.bed 0 -2
 
 # remove all reads that are 100% in flanked introns which means they are not next to the exon position
 bedtools intersect -s -v -f 1.00 -a ${path}${data}-trimmed-uniq-introns.bed -b ${introns}-flanked_0_-2.bed | uniq > ${path}${data}-trimmed-uniq-introns-selected.bed
-rm ${introns}-flanked_0_-2.bed
+#rm ${introns}-flanked_0_-2.bed
+rm ${path}${data}-trimmed-uniq-introns.bed
 
 # set end positions of the read
 python ${path}set_branch_point_position.py ${path}${data}-trimmed-uniq-introns-selected.bed ${path}${data}-trimmed-uniq-introns-selected-bp.bed
-#rm ${path}${data}-selected_reads.bed
+rm ${path}${data}-trimmed-uniq-introns-selected.bed
 
 # sum together reads that ends on the same position
 cat ${path}${data}-trimmed-uniq-introns-selected-bp.bed | awk '{print $1 "\t" $2 "\t" $3 "\t\t\t" $6}' | sort -k1,1 -k2,2n -k6,6 > ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.bed
 python ${path}BEDsum.py ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.bed ${path}${data}-branch_points.bed
+rm ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.bed
 
