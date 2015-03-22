@@ -20,7 +20,7 @@ def set_branch_point_position (fname_in, fname_out):
         if col[5] == '+':
             branch_point = int(col[1]) - 1
         elif col[5] == '-':
-            branch_point = int(col[2]) + 1
+            branch_point = int(col[2])
 	else:
 	    print "error: There is no strand infromation in fith column"
 	    exit(-1)	

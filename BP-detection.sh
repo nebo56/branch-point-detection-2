@@ -17,7 +17,7 @@ export PATH=/home/skgthab/programs/fastx_toolkit0.0.13:$PATH
 export PATH=/home/skgthab/programs/bedtools-2.17.0/bin:$PATH
 
 data=$1
-path=/cluster/project9/ule-group/BranchPoints/branch-point-detection-2-test/
+path=/cluster/project9/ule-group/BranchPoints/branch-point-detection-2/
 introns=/home/skgthab/annotations/regions/mm9-introns.bed
 
 # unzip
@@ -79,7 +79,7 @@ rm ${path}${data}-trimmed-uniq-introns.bed
 
 # set end positions of the read
 python ${path}set_branch_point_position.py ${path}${data}-trimmed-uniq-introns-selected.bed ${path}${data}-trimmed-uniq-introns-selected-bp.bed
-rm ${path}${data}-trimmed-uniq-introns-selected.bed
+#rm ${path}${data}-trimmed-uniq-introns-selected.bed
 
 # sum together reads that ends on the same position
 cat ${path}${data}-trimmed-uniq-introns-selected-bp.bed | awk '{print $1 "\t" $2 "\t" $3 "\t\t\t" $6}' | sort -k1,1 -k2,2n -k6,6 > ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.bed
@@ -87,3 +87,7 @@ python ${path}BEDsum.py ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.b
 rm ${path}${data}-trimmed-uniq-introns-selected-bp.bed
 rm ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.bed
 
+# compress and move results to a new folder
+gzip ${path}${data}.fq
+mkdir ${path}${data}
+mv ${path}${data}* ${path}${data}
