@@ -17,25 +17,28 @@ def BEDsum(fname_in, fname_out):
     lastStart = None
     lastEnd = None
     lastStrand = None
+    lastDistance = None
     cDNAsum = 0
     while line:
         col = line.rstrip('\n').rsplit('\t')
         chr = col[0]
         start = col[1]
         end = col[2]
+        distance = col[4]
         cDNA = 1	# each read count as one
         strand = col[5]
-        if lastChr == None or (lastChr == chr and lastStart == start and lastEnd == end and lastStrand == strand):
+        if lastChr == None or (lastChr == chr and lastStart == start and lastEnd == end and lastStrand == strand and lastDistance == distance):
             cDNAsum += int(cDNA)
         else:
-            fout.write(lastChr + '\t' + lastStart + '\t' +  lastEnd + '\t' + str(cDNAsum) + '\t' + ' ' + '\t' + lastStrand + '\n')
+            fout.write(lastChr + '\t' + lastStart + '\t' +  lastEnd + '\t' + str(cDNAsum) + '\t' + distance + '\t' + lastStrand + '\n')
             cDNAsum = int(cDNA)
         lastChr = chr
         lastStart = start
         lastEnd = end
         lastStrand = strand
+        lastDistance = distance
         line = fin.readline()
-    fout.write(lastChr + '\t' + lastStart + '\t' +  lastEnd + '\t' + str(cDNAsum) + '\t' + ' ' + '\t' + lastStrand + '\n')
+    fout.write(lastChr + '\t' + lastStart + '\t' +  lastEnd + '\t' + str(cDNAsum) + '\t' + distance + '\t' + lastStrand + '\n')
     fout.close()
     fin.close()
 
