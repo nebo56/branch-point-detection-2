@@ -82,7 +82,7 @@ python ${path}set_branch_point_position.py ${path}${data}-trimmed-uniq-introns-s
 #rm ${path}${data}-trimmed-uniq-introns-selected.bed
 
 # sum together reads that ends on the same position
-cat ${path}${data}-trimmed-uniq-introns-selected-bp.bed | awk '{print $1 "\t" $2 "\t" $3 "\t\t" $5 "\t" $6}' | sort -k1,1 -k2,2n -k6,6 > ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.bed
+cat ${path}${data}-trimmed-uniq-introns-selected-bp.bed | awk '{print $1 "\t" $2 "\t" $3 "\t\t" $4 "\t" $5}' | sort -k1,1 -k2,2n -k6,6 > ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.bed
 python ${path}BEDsum.py ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.bed ${path}${data}-branch_points.bed
 rm ${path}${data}-trimmed-uniq-introns-selected-bp.bed
 rm ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.bed
