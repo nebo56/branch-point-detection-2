@@ -25,7 +25,7 @@ rm ${path}${data}-clipped.fq
 python ${path}swap_barcodes_to_header.py ${path}${data}-clipped.fa ${path}${data}-noBarcodes.fa
 rm ${path}${data}-clipped.fa
 
-# map on genome
+# map reads to genome
 bowtie2-align -x ${bowtie_index} -f ${path}${data}-noBarcodes.fa -S ${path}${data}.sam
 rm ${path}${data}-noBarcodes.fa
 
@@ -65,12 +65,12 @@ python ${path}flankBEDpositions.py ${introns} ${introns}-flanked_0_-2.bed 0 -2
 
 # remove all reads that are 100% in flanked introns which means they are not next to the exon position
 bedtools intersect -s -v -f 1.00 -a ${path}${data}-trimmed-uniq-introns.bed -b ${introns}-flanked_0_-2.bed | uniq > ${path}${data}-trimmed-uniq-introns-selected.bed
-#rm ${introns}-flanked_0_-2.bed
+rm ${introns}-flanked_0_-2.bed
 rm ${path}${data}-trimmed-uniq-introns.bed
 
 # set end positions of the read
 python ${path}set_branch_point_position.py ${path}${data}-trimmed-uniq-introns-selected.bed ${path}${data}-trimmed-uniq-introns-selected-bp.bed
-#rm ${path}${data}-trimmed-uniq-introns-selected.bed
+rm ${path}${data}-trimmed-uniq-introns-selected.bed
 
 # sum together reads that ends on the same position
 cat ${path}${data}-trimmed-uniq-introns-selected-bp.bed | awk '{print $1 "\t" $2 "\t" $3 "\t\t" $4 "\t" $5}' | sort -k1,1 -k2,2n -k6,6 > ${path}${data}-trimmed-uniq-introns-selected-bp-sorted.bed
