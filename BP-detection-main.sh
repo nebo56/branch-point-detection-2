@@ -1,26 +1,17 @@
 #!/bin/bash -l
-#$ -l h_vmem=16G
-#$ -l tmem=16G
-#$ -l h_rt=32:0:0
-#$ -j y
-#$ -S /bin/bash
 
-
-PYTHONPATH=/home/skgthab/programs/Python-2.7.5/bin
-PERL5LIB=/home/skgthab/programs/ActivePerl-5.16.3.1603-x86_64-linux-glibc-2.3.5-296746/perl/bin
-export PATH=$PYTHONPATH:$PATH
-export PATH=$PERL5LIB:$PATH
-export PATH=/home/skgthab/programs/tophat-2.0.9.Linux_x86_64:$PATH
+# needed software to run the script
 export PATH=/home/skgthab/programs/bowtie2-2.1.0:$PATH
 export PATH=/home/skgthab/programs/samtools-0.1.19:$PATH
 export PATH=/home/skgthab/programs/fastx_toolkit0.0.13:$PATH
 export PATH=/home/skgthab/programs/bedtools-2.17.0/bin:$PATH
 
-data=$1
-path=/cluster/project9/ule-group/BranchPoints/branch-point-detection-2/
-introns=/home/skgthab/annotations/regions/mm9-introns.bed
+data=$1 #name of the iCLIP fastq file
+path=$2 #working folder
+introns=$3  #genomic positions of introns in BED format
+bowtie_index=$4 #bowtie index folder
 
-# unzip
+# decompress if needed
 gunzip ${path}${data}.fq.gz
 
 # clip the adapter and discard non-clipped sequences and discard the sequences that are shorter then 15 nt + 5 random barcode + 4 experimental barcode
@@ -35,7 +26,7 @@ python ${path}swap_barcodes_to_header.py ${path}${data}-clipped.fa ${path}${data
 rm ${path}${data}-clipped.fa
 
 # map on genome
-bowtie2-align -x ~/bowtie-indexes/mm9/mm9 -f ${path}${data}-noBarcodes.fa -S ${path}${data}.sam
+bowtie2-align -x ${bowtie_index} -f ${path}${data}-noBarcodes.fa -S ${path}${data}.sam
 rm ${path}${data}-noBarcodes.fa
 
 # filter reads woth more then 2 mismatches
